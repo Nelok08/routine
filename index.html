@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Routine</title>
+    <title>Routine Pro</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Routine">
     <link rel="apple-touch-icon" href="icon.png">
-    
     <link rel="manifest" href="manifest.json">
 
     <style>
@@ -18,6 +17,7 @@
             --card-bg: #1e293b;
             --accent: #6366f1;
             --accent-success: #10b981;
+            --accent-danger: #ef4444;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
         }
@@ -30,81 +30,73 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             display: flex;
             justify-content: center;
             padding: 20px;
             padding-top: env(safe-area-inset-top, 20px);
+            padding-bottom: 100px;
         }
 
         .app {
             width: 100%;
             max-width: 450px;
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
+        /* En-tête et Winstreak */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
         }
 
-        h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.05em;
-        }
-
-        .reset-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: var(--text-main);
-            padding: 8px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-
-        .form-group {
+        .winstreak {
+            background: rgba(255, 165, 0, 0.1);
+            color: #fbbf24;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
             display: flex;
-            gap: 10px;
-            margin-bottom: 24px;
+            align-items: center;
+            gap: 5px;
+            font-size: 1.1rem;
         }
 
-        input[type="time"], input[type="text"] {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px;
-            border-radius: 14px;
-            color: var(--text-main);
-            font-size: 1rem;
-            outline: none;
+        /* Barre de progression */
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            height: 12px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
         }
 
-        input[type="time"] {
-            width: 100px;
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #818cf8);
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
         }
 
-        input[type="text"] {
-            flex: 1;
+        .progress-text {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: -20px;
+            margin-bottom: 20px;
         }
 
-        .add-btn {
-            background: var(--accent);
-            border: none;
-            color: white;
-            padding: 0 16px;
-            border-radius: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
+        /* Liste des tâches */
         .task-list {
             display: flex;
             flex-direction: column;
@@ -115,22 +107,24 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(0, 0, 0, 0.15);
+            background: var(--card-bg);
             padding: 16px;
             border-radius: 16px;
             border-left: 4px solid var(--accent);
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .task-item.completed {
             border-left-color: var(--accent-success);
-            opacity: 0.5;
+            opacity: 0.6;
         }
 
         .task-info {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 15px;
+            flex: 1;
+            cursor: pointer;
         }
 
         .task-time {
@@ -141,11 +135,22 @@
 
         .task-item.completed .task-time {
             color: var(--accent-success);
-            text-decoration: line-through;
+        }
+
+        .task-details {
+            display: flex;
+            flex-direction: column;
         }
 
         .task-text {
-            font-size: 1rem;
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+
+        .task-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
         .task-item.completed .task-text {
@@ -153,161 +158,415 @@
             color: var(--text-muted);
         }
 
+        /* Checkbox personnalisée */
         .checkbox-wrapper {
             position: relative;
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
         }
-
         input[type="checkbox"] {
-            width: 24px;
-            height: 24px;
+            width: 100%;
+            height: 100%;
             opacity: 0;
             position: absolute;
             cursor: pointer;
             z-index: 2;
         }
-
         .custom-checkbox {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 24px;
-            height: 24px;
+            top: 0; left: 0; width: 100%; height: 100%;
             border: 2px solid var(--text-muted);
             border-radius: 8px;
             transition: all 0.2s;
         }
-
         input[type="checkbox"]:checked + .custom-checkbox {
             background: var(--accent-success);
             border-color: var(--accent-success);
         }
-
         input[type="checkbox"]:checked + .custom-checkbox::after {
             content: "✓";
             position: absolute;
             color: white;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
         }
+
+        /* Bouton d'ajout flottant (FAB) */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            color: white;
+            border-radius: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+            cursor: pointer;
+            border: none;
+            z-index: 10;
+        }
+
+        /* Modal (Popup d'édition/ajout) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 400px;
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .modal h2 { margin-bottom: 20px; font-size: 1.3rem; }
+
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .modal input[type="text"], .modal input[type="time"], .modal input[type="number"] {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .btn-cancel { background: rgba(255,255,255,0.1); color: white; }
+        .btn-save { background: var(--accent); color: white; }
+        .btn-delete { background: var(--accent-danger); color: white; margin-top: 10px; width: 100%; display: none; }
+
     </style>
 </head>
 <body>
 
     <div class="app">
         <header>
-            <h1>Ma Routine</h1>
-            <button class="reset-btn" onclick="resetDay()">Réinitialiser</button>
+            <div class="header-title">
+                <h1>Ma Routine</h1>
+            </div>
+            <div class="winstreak" id="streakDisplay">🔥 0</div>
         </header>
 
-        <div class="form-group">
-            <input type="time" id="taskTime" required>
-            <input type="text" id="taskText" placeholder="Nouvelle tâche..." required>
-            <button class="add-btn" onclick="addTask()">+</button>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
         </div>
+        <div class="progress-text" id="progressText">0/0 terminé</div>
 
-        <div class="task-list" id="taskList"></div>
+        <div class="task-list" id="taskList">
+            </div>
+    </div>
+
+    <button class="fab" onclick="openModal()">+</button>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h2 id="modalTitle">Nouvelle Tâche</h2>
+            <input type="hidden" id="editTaskId">
+            
+            <div class="input-group">
+                <label>Nom de la tâche</label>
+                <input type="text" id="taskText" placeholder="Ex: Séance de street workout" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Heure du rappel</label>
+                <input type="time" id="taskTime" required>
+            </div>
+
+            <div class="input-group">
+                <label>Répétition (tous les X jours)</label>
+                <input type="number" id="taskInterval" min="1" value="1" required>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal()">Annuler</button>
+                <button class="btn btn-save" onclick="saveTask()">Enregistrer</button>
+            </div>
+            <button class="btn btn-delete" id="btnDelete" onclick="deleteTask()">Supprimer la tâche</button>
+        </div>
     </div>
 
     <script>
-        // Chargement des tâches depuis le localStorage ou tâches par défaut
-        let defaultTasks = [
-            { time: "08:00", text: "Séance de street workout", completed: false, alerted: false },
-            { time: "09:00", text: "Courir", completed: false, alerted: false },
-            { time: "09:30", text: "Mettre la crème", completed: false, alerted: false },
-            { time: "10:30", text: "Session de développement web", completed: false, alerted: false }
+        // --- GESTION DU SON ---
+        // On utilise un son libre de droits. Pour iOS, il faut qu'il soit "débloqué" par un premier clic.
+        const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        document.body.addEventListener('touchstart', () => {
+            notificationSound.load();
+        }, { once: true });
+
+        // --- DONNÉES PAR DÉFAUT ET LOCALSTORAGE ---
+        let tasks = JSON.parse(localStorage.getItem('routine_tasks_v2')) || [
+            { id: 1, time: "09:00", text: "Courir", interval: 1, completedDate: null, alerted: false },
+            { id: 2, time: "09:30", text: "Mettre la crème", interval: 1, completedDate: null, alerted: false },
+            { id: 3, time: "18:00", text: "Séance de street workout", interval: 2, completedDate: null, alerted: false }
         ];
 
-        let tasks = JSON.parse(localStorage.getItem('routine_tasks')) || defaultTasks;
+        let appData = JSON.parse(localStorage.getItem('routine_data')) || {
+            streak: 0,
+            lastStreakDate: null,
+            lastOpenedDate: new Date().toISOString().split('T')[0]
+        };
 
-        function saveTasks() {
-            localStorage.setItem('routine_tasks', JSON.stringify(tasks));
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        // --- INITIALISATION DU JOUR ---
+        function checkNewDay() {
+            if (appData.lastOpenedDate !== todayStr) {
+                // Nouveau jour : On réinitialise l'état "alerted" pour que ça resonne aujourd'hui
+                tasks.forEach(t => t.alerted = false);
+                
+                // Vérifier si la streak doit être brisée (s'il n'a pas validé hier)
+                let yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                let yesterdayStr = yesterday.toISOString().split('T')[0];
+
+                if (appData.lastStreakDate !== yesterdayStr && appData.lastStreakDate !== todayStr) {
+                    appData.streak = 0; // Streak brisée
+                }
+                
+                appData.lastOpenedDate = todayStr;
+                saveAll();
+            }
         }
 
-        function renderTasks() {
-            tasks.sort((a, b) => a.time.localeCompare(b.time));
+        // --- SAUVEGARDE ---
+        function saveAll() {
+            localStorage.setItem('routine_tasks_v2', JSON.stringify(tasks));
+            localStorage.setItem('routine_data', JSON.stringify(appData));
+            renderUI();
+        }
+
+        // --- LOGIQUE D'AFFICHAGE ---
+        function isTaskDueToday(task) {
+            if (!task.completedDate) return true; // Jamais complétée
+            
+            // Si elle a été complétée aujourd'hui, on l'affiche (pour la voir cochée)
+            if (task.completedDate === todayStr) return true;
+
+            // Calculer la différence de jours depuis la dernière fois
+            const lastDate = new Date(task.completedDate);
+            const todayDate = new Date(todayStr);
+            const diffTime = Math.abs(todayDate - lastDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+            return diffDays >= task.interval;
+        }
+
+        function renderUI() {
+            checkNewDay();
+            
+            // 1. Mettre à jour la Winstreak
+            document.getElementById('streakDisplay').innerText = `🔥 ${appData.streak}`;
+
+            // 2. Filtrer et trier les tâches du jour
+            let todayTasks = tasks.filter(t => isTaskDueToday(t));
+            todayTasks.sort((a, b) => a.time.localeCompare(b.time));
+
             const container = document.getElementById('taskList');
             container.innerHTML = '';
 
-            tasks.forEach((task, index) => {
+            let completedCount = 0;
+
+            todayTasks.forEach(task => {
+                const isCompleted = task.completedDate === todayStr;
+                if (isCompleted) completedCount++;
+
                 const item = document.createElement('div');
-                item.className = `task-item ${task.completed ? 'completed' : ''}`;
+                item.className = `task-item ${isCompleted ? 'completed' : ''}`;
                 
+                let recurrenceText = task.interval > 1 ? `Tous les ${task.interval} jours` : "Quotidien";
+
                 item.innerHTML = `
-                    <div class="task-info">
+                    <div class="task-info" onclick="openModal(${task.id})">
                         <span class="task-time">${task.time}</span>
-                        <span class="task-text">${task.text}</span>
+                        <div class="task-details">
+                            <span class="task-text">${task.text}</span>
+                            <span class="task-meta">${recurrenceText}</span>
+                        </div>
                     </div>
                     <div class="checkbox-wrapper">
-                        <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})">
+                        <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleTask(${task.id})">
                         <div class="custom-checkbox"></div>
                     </div>
                 `;
                 container.appendChild(item);
             });
-        }
 
-        function addTask() {
-            const timeInput = document.getElementById('taskTime').value;
-            const textInput = document.getElementById('taskText').value;
+            // 3. Mettre à jour la barre de progression
+            const total = todayTasks.length;
+            const percentage = total === 0 ? 0 : (completedCount / total) * 100;
+            
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+            document.getElementById('progressText').innerText = `${completedCount}/${total} terminé aujourd'hui`;
 
-            if (timeInput && textInput) {
-                tasks.push({ time: timeInput, text: textInput, completed: false, alerted: false });
-                document.getElementById('taskTime').value = '';
-                document.getElementById('taskText').value = '';
-                saveTasks();
-                renderTasks();
+            // 4. Vérifier la Winstreak en direct
+            if (total > 0 && completedCount === total && appData.lastStreakDate !== todayStr) {
+                appData.streak += 1;
+                appData.lastStreakDate = todayStr;
+                saveAll(); // Sauvegarder la nouvelle streak
+            } else if (completedCount < total && appData.lastStreakDate === todayStr) {
+                // S'il décoche une case, on annule la streak d'aujourd'hui
+                appData.streak = Math.max(0, appData.streak - 1);
+                appData.lastStreakDate = null;
+                saveAll();
             }
         }
 
-        function toggleTask(index) {
-            tasks[index].completed = !tasks[index].completed;
-            saveTasks();
-            renderTasks();
+        // --- ACTIONS SUR LES TÂCHES ---
+        function toggleTask(taskId) {
+            let task = tasks.find(t => t.id === taskId);
+            if (task.completedDate === todayStr) {
+                task.completedDate = null; // Décoche
+            } else {
+                task.completedDate = todayStr; // Coche
+            }
+            saveAll();
         }
 
-        function resetDay() {
-            tasks.forEach(t => {
-                t.completed = false;
-                t.alerted = false;
-            });
-            saveTasks();
-            renderTasks();
+        // --- GESTION DU MODAL (AJOUT/ÉDITION) ---
+        function openModal(taskId = null) {
+            const modal = document.getElementById('modalOverlay');
+            const title = document.getElementById('modalTitle');
+            const deleteBtn = document.getElementById('btnDelete');
+            
+            if (taskId !== null) {
+                // Mode Édition
+                let task = tasks.find(t => t.id === taskId);
+                title.innerText = "Modifier la tâche";
+                document.getElementById('editTaskId').value = task.id;
+                document.getElementById('taskText').value = task.text;
+                document.getElementById('taskTime').value = task.time;
+                document.getElementById('taskInterval').value = task.interval;
+                deleteBtn.style.display = 'block';
+            } else {
+                // Mode Création
+                title.innerText = "Nouvelle Tâche";
+                document.getElementById('editTaskId').value = '';
+                document.getElementById('taskText').value = '';
+                document.getElementById('taskTime').value = '09:00';
+                document.getElementById('taskInterval').value = '1';
+                deleteBtn.style.display = 'none';
+            }
+            modal.style.display = 'flex';
         }
 
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+
+        function saveTask() {
+            const id = document.getElementById('editTaskId').value;
+            const text = document.getElementById('taskText').value;
+            const time = document.getElementById('taskTime').value;
+            const interval = parseInt(document.getElementById('taskInterval').value);
+
+            if (!text || !time || interval < 1) {
+                alert("Remplis bien tous les champs !");
+                return;
+            }
+
+            if (id) {
+                // Mise à jour
+                let task = tasks.find(t => t.id == id);
+                task.text = text;
+                task.time = time;
+                task.interval = interval;
+            } else {
+                // Création
+                tasks.push({
+                    id: Date.now(),
+                    text: text,
+                    time: time,
+                    interval: interval,
+                    completedDate: null,
+                    alerted: false
+                });
+            }
+
+            closeModal();
+            saveAll();
+        }
+
+        function deleteTask() {
+            const id = document.getElementById('editTaskId').value;
+            if (confirm("Supprimer cette tâche définitivement ?")) {
+                tasks = tasks.filter(t => t.id != id);
+                closeModal();
+                saveAll();
+            }
+        }
+
+        // --- SYSTÈME DE RAPPELS ET SONNERIE ---
         function checkReminders() {
             const now = new Date();
             const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
-            tasks.forEach(task => {
-                if (task.time === currentTime && !task.completed && !task.alerted) {
+            let todayTasks = tasks.filter(t => isTaskDueToday(t));
+
+            todayTasks.forEach(task => {
+                const isCompleted = task.completedDate === todayStr;
+                
+                if (task.time === currentTime && !isCompleted && !task.alerted) {
                     task.alerted = true;
-                    saveTasks();
-                    alert(`⏰ Routine : C'est l'heure de "${task.text}"`);
-                }
-                if (task.time !== currentTime && task.alerted) {
-                    task.alerted = false;
-                    saveTasks();
+                    saveAll();
+                    
+                    // Jouer le son (fonctionnera si l'app est ouverte et qu'il y a eu une interaction avant)
+                    notificationSound.play().catch(e => console.log("Son bloqué par iOS", e));
+                    
+                    // Alerte visuelle native
+                    alert(`⏰ Routine : C'est l'heure de "${task.text}" !`);
                 }
             });
         }
 
-        // Initialisation
-        renderTasks();
-        setInterval(checkReminders, 5000);
+        // --- DÉMARRAGE ---
+        renderUI();
+        setInterval(checkReminders, 10000); // Vérifie l'heure toutes les 10 secondes
 
-        // Enregistrement du Service Worker pour le mode PWA / Hors-ligne
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker enregistré !'))
-                    .catch(err => console.log('Erreur SW:', err));
-            });
-        }
     </script>
 </body>
 </html>
